@@ -65,8 +65,8 @@ public class APICallJob extends Job {
         extras.putString("api",api);
         extras.putString("apiType",apiType);
 
-        new JobRequest.Builder(APICallJob.TAG).setExtras(extras)
-                .setExecutionWindow(30_000L, 40_000L)
+
+        new JobRequest.Builder(APICallJob.TAG).setExtras(extras).startNow()
                 .build()
                 .schedule();
     }

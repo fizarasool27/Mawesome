@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
@@ -55,14 +56,17 @@ public class MainActivity extends AppCompatActivity {
   private SwipeRefreshLayout swipeOnRefresh;
   public String mlat;
   public String mlon;
+  public static final int REQUEST_PERMISSION=1;
 
 
     LocationHelper locationHelper;
     ImageSceenshotSend imageSceenshotSend;
+    static LocationManager locationManager;
 
     public static final int REQUEST_LOCATION_PERMISSION=1;
     public static final int REQUEST_CHECK_SETTINGS = 1;
     public static final int REQUEST_WRITE_EXTERNAL_STORAGE=2;
+    //public static final int REQUEST_LOCATION=1;
     private static final String TAG = "MainActivity";
 
     @Override
@@ -70,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+       // locationManager=(LocationManager)getSystemService(Context.LOCATION_SERVICE);
         imageLoader = ImageLoader.getInstance(); // Get singleton instance
         weatherTextView=(TextView)findViewById(R.id.currentTemp);
         cityTextView=(TextView)findViewById(R.id.city);
@@ -96,8 +102,14 @@ public class MainActivity extends AppCompatActivity {
                         swipeOnRefresh.setRefreshing(false);
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
+
+                        locationHelper.locationGetter();
                         WeatherReport weatherReport=new WeatherReport();
-                        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+mlat+"&long="+mlon,"content");
+                        MessageEvent event=new MessageEvent();
+                        String mlat=event.getLatitude();
+                        String mlon=event.getLongitude();
+                        APICallJob.scheduleJob("http://api.openweathermap.org/data/2.5/weather?lat="+mlat+"&lon="+mlon+"&units=metric&APPID=e2bf01c599a470fa873095e45b46facb","weather");
+                        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+event.getLatitude()+"&long="+event.getLongitude(),"content");
                         Content content=new Content();
                         EventBus.getDefault().post(content);
                         }
@@ -110,7 +122,8 @@ public class MainActivity extends AppCompatActivity {
         locationHelper=new LocationHelper(this);
         locationHelper.checkPermission();
         imageSceenshotSend.checkPermission();
-//        locationHelper.locationGetter();
+        //locationHelper.getCurrentLocation();
+        locationHelper.locationGetter();
 
         }
 
@@ -153,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        locationHelper.getCurrentLocation();
+       // locationHelper.getCurrentLocation();
     }
     @Override
     public void onStop() {

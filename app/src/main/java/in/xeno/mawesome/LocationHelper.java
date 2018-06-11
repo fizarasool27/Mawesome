@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -30,6 +31,7 @@ import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 public class LocationHelper {
     Activity activity;
+
 
     LocationHelper(Activity activity)
     {
@@ -58,9 +60,6 @@ public class LocationHelper {
                         new String[]{ACCESS_FINE_LOCATION},
                         MainActivity.REQUEST_LOCATION_PERMISSION);
 
-                // MY_PERMISSIONS_REQUEST_ACCESS_FINE-LOCATION is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
             }
         }
         else
@@ -109,20 +108,22 @@ public class LocationHelper {
                         ResolvableApiException resolvable = (ResolvableApiException) e;
                         resolvable.startResolutionForResult(activity, MainActivity.REQUEST_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException sendEx) {
-                        // Ignore the error.
                     }
                 }
             }
         });
     }
-    public void getCurrentLocation(){
-        MessageEvent messageEvent=new MessageEvent();
-        messageEvent.setLatitude(String.valueOf(12.9716));
-        messageEvent.setLongitude(String.valueOf(77.5946));
+   // public static void getCurrentLocation(){
 
+       // MessageEvent messageEvent=new MessageEvent();
+        //double latitude=location.getLatitude();
+        //double longitude=location.getLongitude();
 
-        EventBus.getDefault().post(messageEvent);
-    }
+       // messageEvent.setLatitude(String.valueOf(12.9716));
+        //messageEvent.setLongitude(String.valueOf(77.5946));
+
+        //EventBus.getDefault().post(messageEvent);
+   // }
     public void locationGetter()
     {
         if (ContextCompat.checkSelfPermission(activity,
@@ -139,6 +140,7 @@ public class LocationHelper {
                         public void onSuccess(Location location) {
                             // Got last known location. In some rare situations this can be null.
                             if (location != null) {
+                                //getCurrentLocation(location);
 
                                 double latitude=location.getLatitude();
                                 double longitude=location.getLongitude();
