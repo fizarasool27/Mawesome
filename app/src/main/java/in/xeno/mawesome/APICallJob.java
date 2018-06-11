@@ -19,8 +19,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-//import java.util.Map;
-//import org.json.simple.JSONObject;
 
 public class APICallJob extends Job {
     public static final String TAG="API";
@@ -32,7 +30,6 @@ public class APICallJob extends Job {
         OkHttpClient client = new OkHttpClient();
         String result = "";
         PersistableBundleCompat bundle = params.getExtras();
-        Map<String,String> map=new HashMap<>();
 
         try {
             Request request = new Request.Builder()
@@ -50,7 +47,6 @@ public class APICallJob extends Job {
             }
             else if(bundle.getString("apiType","").equals("content"))
             {
-
                 Content content = in.xeno.mawesome.JsonParser.getExactTemp(result);
                 EventBus.getDefault().post(content);
             }
@@ -60,7 +56,7 @@ public class APICallJob extends Job {
             }
 
         } catch (Exception e) {
-
+          e.printStackTrace();
         }
         return Result.SUCCESS;
     }

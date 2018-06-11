@@ -53,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
   private ImageLoader imageLoader;
   private RelativeLayout swipe;
   private SwipeRefreshLayout swipeOnRefresh;
+  public String mlat;
+  public String mlon;
 
 
     LocationHelper locationHelper;
@@ -69,19 +71,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         imageLoader = ImageLoader.getInstance(); // Get singleton instance
-        weatherTextView=findViewById(R.id.currentTemp);
-        cityTextView=findViewById(R.id.city);
-        weatherDesc=findViewById(R.id.weatherDescription);
-        imageView=findViewById(R.id.image);
-        swipe=findViewById(R.id.swipeAction);
+        weatherTextView=(TextView)findViewById(R.id.currentTemp);
+        cityTextView=(TextView)findViewById(R.id.city);
+        weatherDesc=(TextView)findViewById(R.id.weatherDescription);
+        imageView=(ImageView)findViewById(R.id.image);
+        swipe=(RelativeLayout)findViewById(R.id.swipeAction);
         swipeOnRefresh=findViewById(R.id.swiperefresh);
-        cityTextView=findViewById(R.id.city);
+        cityTextView=(TextView)findViewById(R.id.city);
         final View rootView = getWindow().getDecorView().findViewById(R.id.swipeAction);
         imageSceenshotSend=new ImageSceenshotSend(MainActivity.this);
 
         swipe.setOnTouchListener(new OnSwipeTouchListener(this){
             public void onSwipeTop() {
-
 
                 imageSceenshotSend.getScreenShot(MainActivity.this,rootView);
             }
@@ -93,33 +94,23 @@ public class MainActivity extends AppCompatActivity {
                     public void onRefresh() {
                         Log.i(TAG,"onRefresh called from SwipeRefreshLayout");
                         swipeOnRefresh.setRefreshing(false);
-
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
-
-                      WeatherReport weatherReport=new WeatherReport();
-                        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp(),"content");
-                       // EventBus.getDefault().post(weatherReport);
+                        WeatherReport weatherReport=new WeatherReport();
+                        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+mlat+"&long="+mlon,"content");
                         Content content=new Content();
                         EventBus.getDefault().post(content);
-
                         }
                 }
         );
 
-
-
-
-         //imageLoader.displayImage("https://res.cloudinary.com/mawesomeweather/image/upload/v1527753988/mawesome1.jpg",imageView);
-
-
         FusedLocationProviderClient mFusedLocationClient;
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         locationHelper=new LocationHelper(this);
         locationHelper.checkPermission();
         imageSceenshotSend.checkPermission();
+//        locationHelper.locationGetter();
 
         }
 
@@ -134,20 +125,15 @@ public class MainActivity extends AppCompatActivity {
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
                     locationHelper.changeSettings();
-
-
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                 }
                 return;
             }
-
             case REQUEST_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length> 0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
-
-                }
-
+                    }
             }// other 'case' lines to check for other permissions
         }
     }
@@ -161,18 +147,14 @@ public class MainActivity extends AppCompatActivity {
                 locationHelper.locationGetter();
             }
         }
-
         super.onActivityResult(requestCode, resultCode, data);
     }
-
-
     @Override
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
+        locationHelper.getCurrentLocation();
     }
-
-
     @Override
     public void onStop() {
         super.onStop();
@@ -183,29 +165,27 @@ public class MainActivity extends AppCompatActivity {
     public void onMessageEvent(MessageEvent event) {
 
         //mlatitude.setText(event.getMessage());
-        APICallJob.scheduleJob("http://api.openweathermap.org/data/2.5/weather?lat="+event.getLatitude()+"&lon="+event.getLongitude()+"&units=metric&APPID=e2bf01c599a470fa873095e45b46facb","weather");
+        mlat=event.getLatitude();
+        mlon=event.getLongitude();
+        APICallJob.scheduleJob("http://api.openweathermap.org/data/2.5/weather?lat="+mlat+"&lon="+mlon+"&units=metric&APPID=e2bf01c599a470fa873095e45b46facb","weather");
 
     }
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(WeatherReport weatherReport){
         //String weatherText="The current temperature is "+weatherReport.getTemp();
+        //MessageEvent event=new MessageEvent();
         String curTemp=weatherReport.getTemp()+(char)0x00B0+"C";
         weatherTextView.setText(curTemp);
         cityTextView.setText(weatherReport.getCity());
         weatherDesc.setText(weatherReport.getDescription());
-        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp(),"content");
-
+        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+mlat+"&long="+mlon,"content");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onMessageEvent(Content content){
         imageLoader.displayImage(content.getContent(),imageView);
     }
-
-
     private ShareActionProvider mShareActionProvider;
-
-
 
 
     @Override

@@ -39,9 +39,6 @@ public class LocationHelper {
 
 
 
-
-
-
     public void checkPermission()
     {
         if (ContextCompat.checkSelfPermission(activity,
@@ -95,7 +92,7 @@ public class LocationHelper {
                 // All location settings are satisfied. The client can initialize
                 // location requests here.
                 // ...//THE USER'S LOCATION IS ALREADY ON
-                locationGetter();
+//                locationGetter();
             }
         });
 
@@ -117,6 +114,14 @@ public class LocationHelper {
                 }
             }
         });
+    }
+    public void getCurrentLocation(){
+        MessageEvent messageEvent=new MessageEvent();
+        messageEvent.setLatitude(String.valueOf(12.9716));
+        messageEvent.setLongitude(String.valueOf(77.5946));
+
+
+        EventBus.getDefault().post(messageEvent);
     }
     public void locationGetter()
     {
