@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ShareActionProvider;
@@ -72,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
@@ -102,12 +107,12 @@ public class MainActivity extends AppCompatActivity {
                         swipeOnRefresh.setRefreshing(false);
                         // This method performs the actual data-refresh operation.
                         // The method calls setRefreshing(false) when it's finished.
-
                         locationHelper.locationGetter();
                         WeatherReport weatherReport=new WeatherReport();
                         MessageEvent event=new MessageEvent();
                         String mlat=event.getLatitude();
                         String mlon=event.getLongitude();
+
                         APICallJob.scheduleJob("http://api.openweathermap.org/data/2.5/weather?lat="+mlat+"&lon="+mlon+"&units=metric&APPID=e2bf01c599a470fa873095e45b46facb","weather");
                         APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+event.getLatitude()+"&long="+event.getLongitude(),"content");
                         Content content=new Content();
