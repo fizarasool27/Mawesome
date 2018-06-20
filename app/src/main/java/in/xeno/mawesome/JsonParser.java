@@ -26,9 +26,9 @@ public class JsonParser {
         weatherobj.setDescription(desc);
         weatherobj.setCity(city);
 
-
         return weatherobj;
     }
+
     public static Content getExactTemp(String result)
     {
         Content obj=new Content();

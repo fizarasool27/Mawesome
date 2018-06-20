@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                         String mlon=event.getLongitude();
 
                         APICallJob.scheduleJob("http://api.openweathermap.org/data/2.5/weather?lat="+mlat+"&lon="+mlon+"&units=metric&APPID=e2bf01c599a470fa873095e45b46facb","weather");
-                        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+event.getLatitude()+"&long="+event.getLongitude(),"content");
+                        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read_new.php?temp="+weatherReport.getTemp()+"&lat="+event.getLatitude()+"&long="+event.getLongitude()+"&wet="+weatherReport.getDescription(),"content");
                         Content content=new Content();
                         EventBus.getDefault().post(content);
                         }
@@ -149,6 +149,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 return;
             }
+
             case REQUEST_WRITE_EXTERNAL_STORAGE: {
                 if (grantResults.length> 0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
                     }
@@ -196,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
         weatherTextView.setText(curTemp);
         cityTextView.setText(weatherReport.getCity());
         weatherDesc.setText(weatherReport.getDescription());
-        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read.php?temp="+weatherReport.getTemp()+"&lat="+mlat+"&long="+mlon,"content");
+        APICallJob.scheduleJob("https://mawesome.000webhostapp.com/read_new.php?temp="+weatherReport.getTemp()+"&lat="+mlat+"&long="+mlon+"&wet="+weatherReport.getDescription(),"content");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
