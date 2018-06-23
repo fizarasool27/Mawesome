@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.view.View;
 import android.widget.Toast;
 
@@ -72,8 +73,6 @@ public class ImageSceenshotSend {
 
     }
 
-
-
     public void getScreenShot(Context context,View view) {
         View screenView = view.getRootView();
         screenView.setDrawingCacheEnabled(true);
@@ -99,8 +98,10 @@ public class ImageSceenshotSend {
     }
 
         private void shareImage(Context context,File file){
-            Uri uri = Uri.fromFile(file);
+            //Uri uri = Uri.fromFile(file);
+            Uri uri= FileProvider.getUriForFile(context,context.getApplicationContext().getPackageName()+".in.xeno.mawesome.provider",file);
             Intent intent = new Intent();
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setAction(Intent.ACTION_SEND);
             intent.setType("image/*");
 
